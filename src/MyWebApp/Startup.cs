@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using MyWebApp.Hubs;
 
 namespace MyWebApp
 {
@@ -10,6 +11,7 @@ namespace MyWebApp
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -18,8 +20,14 @@ namespace MyWebApp
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/Hubs/ChatHub");
+            });
 
             app.UseStaticFiles();
+
             app.Run(async (context) =>
             {
                 if (context.Request.Path == "/")
