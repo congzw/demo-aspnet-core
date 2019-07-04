@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>chat</title>
+    <link href="lib/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-xs-6">&nbsp;</div>
+        <div class="col-xs-6">
+            DeviceId........<input type="text" id="deviceId" />
+            <br />
+            DeviceName..<input type="text" id="deviceName" />
+            <br />
+            ChangeTo.......<input type="button" id="btnChangeState" value="-> Online" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">&nbsp;</div>
+        <div class="col-xs-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+<script src="lib/@aspnet/signalr/dist/browser/signalr.js"></script>
+<script src="scripts/device.js"></script>
+</body>
+</html>
