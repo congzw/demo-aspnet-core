@@ -27,6 +27,7 @@ namespace MyWebApp
             {
                 routes.MapHub<ChatHub>("/Hubs/ChatHub");
                 routes.MapHub<DeviceHub>("/Hubs/DeviceHub");
+                routes.MapHub<WhiteboardHub>("/Hubs/WhiteboardHub");
             });
 
             app.UseStaticFiles();

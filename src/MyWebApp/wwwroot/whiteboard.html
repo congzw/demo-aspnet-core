@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="scripts/whiteboard/signalr.js"></script>
+    <script src="lib/@aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="scripts/whiteboard/jquery-3.2.1.js"></script>
+    <script src="scripts/whiteboard/jquery-ui.js"></script>
+    <title>ShareWhiteBoard</title>
+    <style>
+        canvas {
+            cursor: crosshair;
+            border: 1px solid #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="500" onmouseout="clearMousePositions()"></canvas>
+    <select id="color">
+        <option value="black">Black</option>
+        <option value="red">Red</option>
+        <option value="yellow">Yellow</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+    <div id="output"></div>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var $canvas = $(canvas);
+
+        var canvasX = $canvas.offset().left;
+        var canvasY = $canvas.offset().top;
+
+        console.log('canvas: ' + canvasX + ',' + canvasY);
+
+        var lastMouseX = 0;
+        var lastMouseY = 0;
+        var mouseX = 0;
+        var mouseY = 0;
+        var mousedown = false;
+        var toolType = 'draw';
+        var mouse_down = false;
+
+        $canvas.on('mousedown', function (e) {
+            lastMouseX = mouseX = parseInt(e.clientX - canvasX);
+            lastMouseY = mouseY = parseInt(e.clientY - canvasY);
+            mousedown = true;
+        });
+
+        $canvas.on('mouseup', function (e) {
+            mousedown = false;
+        });
+
+        $canvas.on('mousemove', function (e) {
+            mouseX = parseInt(e.clientX - canvasX);
+            mouseY = parseInt(e.clientY - canvasY);
+            var color = $('select[id=color]').val();
+
+            if ((lastMouseX > 0 && lastMouseY > 0) && mousedown) {
+                drawCanvas(mouseX, mouseY, lastMouseX, lastMouseY, color);
+                //connection.invoke('draw', lastMouseX, lastMouseY, mouseX, mouseY, color);
+            }
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+
+            $('#output').html('current: ' + mouseX + ', ' + mouseY + '<br/>last: ' + lastMouseX + ', ' + lastMouseY + '<br/>mousedown: ' + mousedown);
+        });
+
+        var drawBufferSize = 20;
+        var drawBufferItems = [];
+        var drawCount = 0;
+        var drawCanvasBuffers = function (buffers) {
+            drawCount++;
+            console.log('----drawing count:' + drawCount + ' ----');
+
+            for (var i = 0; i < buffers.length; i++) {
+
+                var item = buffers[i];
+                ctx.beginPath();
+                //console.log("X: " + item.x + " Y: " + item.y);
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+             
+                ctx.moveTo(item.prevX, item.prevY);
+                ctx.lineTo(item.x, item.y);
+                ctx.lineJoin = ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+        };
+
+        var drawCanvas = function (prevX, prevY, x, y, color) {
+
+            drawBufferItems.push({ prevX, prevY, x,y, color });
+            if (drawBufferItems.length >= drawBufferSize) {
+                drawCanvasBuffers(drawBufferItems);
+                connection.invoke('DrawLines', drawBufferItems);
+                drawBufferItems = [];
+            }
+        };
+        
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl('/Hubs/WhiteboardHub')
+            .build();
+
+        connection.on('DrawLines', function (bufferItems) {
+            drawCanvasBuffers(bufferItems);
+        });
+        connection.start();
+
+        clearMousePositions = function () {
+            lastMouseX = 0;
+            lastMouseY = 0;
+        }
+
+    </script>
+</body>
+
+</html>
