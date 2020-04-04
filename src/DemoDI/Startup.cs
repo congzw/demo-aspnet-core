@@ -1,9 +1,13 @@
 ﻿using DemoDI.Demos;
+using DemoDI.Demos.InitTasks;
+using DemoDI.Demos.ObjectTraces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
 
 namespace DemoDI
 {
@@ -30,6 +34,18 @@ namespace DemoDI
             }
 
             app.UseMvc();
+
+            LoopTaskHelper.StartLoop("Foo", () => LoopTask(app.ApplicationServices), TimeSpan.FromMilliseconds(200));
+        }
+
+        private static void LoopTask(IServiceProvider sp)
+        {
+            //var dbContext = sp.GetService<TraceDbContext>();
+            using (IServiceScope scope = sp.CreateScope())
+            {
+                var scopeSp = scope.ServiceProvider;
+                var dbContext = scopeSp.GetService<TraceDbContext>();
+            }
         }
     }
 }

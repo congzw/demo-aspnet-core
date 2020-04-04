@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DemoDI.Demos.ObjectTraces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DemoDI.Demos
 {
@@ -12,6 +13,10 @@ namespace DemoDI.Demos
             services.AddTransient<BarService>();
             services.AddScoped<DbContext>();
             //services.AddTransient<DbContext>();
+
+            services.AddScoped<TraceDbContext>();
+            //services.AddTransient<TraceDbContext>();
+            //services.AddSingleton<TraceDbContext>();
         }
     }
 }

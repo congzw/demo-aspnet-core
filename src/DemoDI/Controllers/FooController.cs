@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DemoDI.Demos;
+using DemoDI.Demos.InitTasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoDI.Controllers
@@ -35,6 +36,14 @@ namespace DemoDI.Controllers
             var helper = ObjectCounter.Instance;
             helper.Items.Clear();
             return "Clear At: " + DateTime.Now.ToString("s");
+        }
+        
+        [Route("StopLoop")]
+        [HttpGet]
+        public string StopLoop()
+        {
+            LoopTaskHelper.StopLoop("Foo");
+            return "StopLoop At: " + DateTime.Now.ToString("s");
         }
     }
 }
