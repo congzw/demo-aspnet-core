@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DemoDI.Demos;
 using DemoDI.Demos.InitTasks;
 using DemoDI.Demos.ObjectTraces;
@@ -24,11 +25,29 @@ namespace DemoDI.Controllers
 
         [Route("Get")]
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> Get([FromServices]TraceDbContext dbContext)
         {
-            //IServiceProvider sp = ServiceLocator.Provider;
-            //var test = sp.GetService<TraceDbContext>();
-                       
+            LogHelper.Debug("<<<<scope sync");
+            ServiceProviderLocator.Provider.RunInScope(x =>
+            {
+                var test = x.GetService<TraceDbContext>();
+            });
+            LogHelper.Debug("    scope sync>>>>");
+
+            await Task.Run(() =>
+            {
+                LogHelper.Debug("<<<<scope async");
+                ServiceProviderLocator.Provider.RunInScope(x =>
+                {
+                    var test = x.GetService<TraceDbContext>();
+                });
+                LogHelper.Debug("    scope async>>>>");
+            });
+
+            LogHelper.Debug("<<<<request");
+            ServiceProviderLocator.Provider.GetService<TraceDbContext>();
+            LogHelper.Debug("    request>>>>");
+            
             var messages = ObjectCounter.Instance.Items;
             var results = messages.Select(x => string.Format("{0} {1}/{2}", x.Value.Type, x.Value.CurrentCount, x.Value.TotalCount));
             return results;

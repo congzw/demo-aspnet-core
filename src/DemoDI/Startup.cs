@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 
 namespace DemoDI
 {
@@ -22,10 +23,10 @@ namespace DemoDI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-                       
+
             services.AddDemos();
 
-            services.AddServiceLocatorHttpAdapter();
+            services.AddServiceProviderLocatorHttp();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -36,10 +37,34 @@ namespace DemoDI
             }
 
             app.UseMvc();
-            app.UseServiceLocatorHttpAdapter();
+            
+            app.UseServiceProviderLocatorHttp();
 
             //LoopTaskHelper.StartLoop("Foo", () => LoopTask(app.ApplicationServices), TimeSpan.FromMilliseconds(5000));
-            LoopTaskHelper.StartLoop("Foo", () => LoopTask2(), TimeSpan.FromMilliseconds(5000));
+            //LoopTaskHelper.StartLoop("Foo", () => LoopTask2(), TimeSpan.FromMilliseconds(5000));
+            //TestServiceProvider(app);
+        }
+
+        private static void TestServiceProvider(IApplicationBuilder app)
+        {
+            //Microsoft.Extensions.DependencyInjection.ServiceProvider: 38524289
+            //Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope: 11174282
+            //Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope: 33459681
+            //Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope: 33459681
+
+            TraceIt(app.ApplicationServices);
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                TraceIt(scope.ServiceProvider);
+            }
+
+            TraceIt(app.ApplicationServices.GetRequiredService<IServiceProvider>());
+            TraceIt(app.ApplicationServices.GetRequiredService<IServiceProvider>());
+        }
+
+        private static void TraceIt(object instance)
+        {
+            Trace.WriteLine(string.Format("{0}: {1}", instance.GetType().FullName, instance.GetHashCode()));
         }
 
         private static void LoopTask(IServiceProvider sp)
@@ -53,12 +78,15 @@ namespace DemoDI
 
         private static void LoopTask2()
         {
-            IServiceProvider sp = ServiceLocator.Provider;
+            //using (var scope = ServiceProviderLocator.Provider.CreateScope())
+            //{
+            //    var test = scope.ServiceProvider.GetService<TraceDbContext>();
+            //}
 
-            using (IServiceScope scope = sp.CreateScope())
+            ServiceProviderLocator.Provider.RunInScope(x =>
             {
-                var test = scope.ServiceProvider.GetService<TraceDbContext>();
-            }
+                var test = x.GetService<TraceDbContext>();
+            });
         }
     }
 }
