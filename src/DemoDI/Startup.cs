@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading;
 
 namespace DemoDI
 {
@@ -23,7 +22,10 @@ namespace DemoDI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                       
             services.AddDemos();
+
+            services.AddServiceLocatorHttpAdapter();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -34,17 +36,28 @@ namespace DemoDI
             }
 
             app.UseMvc();
+            app.UseServiceLocatorHttpAdapter();
 
-            LoopTaskHelper.StartLoop("Foo", () => LoopTask(app.ApplicationServices), TimeSpan.FromMilliseconds(200));
+            //LoopTaskHelper.StartLoop("Foo", () => LoopTask(app.ApplicationServices), TimeSpan.FromMilliseconds(5000));
+            LoopTaskHelper.StartLoop("Foo", () => LoopTask2(), TimeSpan.FromMilliseconds(5000));
         }
 
         private static void LoopTask(IServiceProvider sp)
         {
-            //var dbContext = sp.GetService<TraceDbContext>();
             using (IServiceScope scope = sp.CreateScope())
             {
                 var scopeSp = scope.ServiceProvider;
-                var dbContext = scopeSp.GetService<TraceDbContext>();
+                var dbContext = scopeSp.GetRequiredService<TraceDbContext>();
+            }
+        }
+
+        private static void LoopTask2()
+        {
+            IServiceProvider sp = ServiceLocator.Provider;
+
+            using (IServiceScope scope = sp.CreateScope())
+            {
+                var test = scope.ServiceProvider.GetService<TraceDbContext>();
             }
         }
     }

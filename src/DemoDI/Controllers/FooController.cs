@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using DemoDI.Demos;
 using DemoDI.Demos.InitTasks;
+using DemoDI.Demos.ObjectTraces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DemoDI.Controllers
 {
@@ -24,6 +26,9 @@ namespace DemoDI.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            //IServiceProvider sp = ServiceLocator.Provider;
+            //var test = sp.GetService<TraceDbContext>();
+                       
             var messages = ObjectCounter.Instance.Items;
             var results = messages.Select(x => string.Format("{0} {1}/{2}", x.Value.Type, x.Value.CurrentCount, x.Value.TotalCount));
             return results;

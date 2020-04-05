@@ -45,6 +45,8 @@ namespace DemoDI.Demos.InitTasks
         /// <param name="taskCreationOptions">The task creation options</param>
         private static void StartNew(Action action, TimeSpan pollInterval, CancellationToken token, TaskCreationOptions taskCreationOptions = TaskCreationOptions.None)
         {
+            var maxTryCount = 3;
+            var tryTime = 0;
             Task.Factory.StartNew(
                 () =>
                 {
@@ -53,11 +55,18 @@ namespace DemoDI.Demos.InitTasks
                         try
                         {
                             action();
+                            tryTime = 0;
                             if (token.WaitHandle.WaitOne(pollInterval)) break;
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            return;
+                            tryTime++;
+                            LogHelper.Instance.Error(ex, ex.Message);
+                            if (tryTime >= maxTryCount)
+                            {
+                                return;
+                            }
+                            if (token.WaitHandle.WaitOne(pollInterval)) break;
                         }
                     }
                     while (true);
