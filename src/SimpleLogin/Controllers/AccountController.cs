@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -79,5 +80,16 @@ namespace WebApplication1.Controllers
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
         }
+    }
+    
+    public class LoginModel
+    {
+        [Required]
+        [UIHint("email")]
+        public string Email { get; set; }
+
+        [Required]
+        [UIHint("password")]
+        public string Password { get; set; }
     }
 }

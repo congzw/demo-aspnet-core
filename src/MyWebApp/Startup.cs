@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using MyWebApp.Domain.Devices;
 using MyWebApp.Hubs;
@@ -14,6 +15,7 @@ namespace MyWebApp
         {
             services.AddSignalR();
             services.AddSingleton<IDeviceManager, DeviceManager>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -22,7 +24,14 @@ namespace MyWebApp
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/Hubs/ChatHub");
@@ -38,7 +47,6 @@ namespace MyWebApp
                 {
                     await Task.Run(() => context.Response.Redirect("index.html", false));
                 }
-                await context.Response.WriteAsync("Hello World! Path: " + context.Request.Path);
             });
         }
     }
