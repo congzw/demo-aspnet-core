@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoDI", "DemoDI\DemoDI.csproj", "{68826BFA-673D-4168-98AB-84949EFAF544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLogin", "SimpleLogin\SimpleLogin.csproj", "{716418E1-F4D3-4043-8596-6EDF22A80CA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleLogin", "SimpleLogin\SimpleLogin.csproj", "{716418E1-F4D3-4043-8596-6EDF22A80CA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtDemo", "JwtDemo\JwtDemo.csproj", "{E0A58091-946D-407A-B761-8DA5BB7CB65D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{716418E1-F4D3-4043-8596-6EDF22A80CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{716418E1-F4D3-4043-8596-6EDF22A80CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{716418E1-F4D3-4043-8596-6EDF22A80CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0A58091-946D-407A-B761-8DA5BB7CB65D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0A58091-946D-407A-B761-8DA5BB7CB65D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0A58091-946D-407A-B761-8DA5BB7CB65D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0A58091-946D-407A-B761-8DA5BB7CB65D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
